@@ -1,6 +1,25 @@
 # Vanguard Protection Website
 
-Astro static site, hosted on Cloudflare Pages.
+Astro static site, hosted on Cloudflare Pages. Trilingual (English / Sinhala / Tamil) at `/en/`, `/si/`, `/ta/`.
+
+## Where things live
+
+| Path | What |
+| --- | --- |
+| `src/data/ui.ts` | Site-wide and page text (EN/SI/TA) |
+| `src/data/divisions.ts` | The four divisions: content, services, accent colours |
+| `src/data/metrofix.ts` | Metro Fix page content |
+| `src/lib/site.ts` | Company name, phone, email, address |
+| `src/content/blog/*.md` | Blog posts (frontmatter: title, description, pubDate, category, image) |
+| `functions/api/contact.js` | Contact form endpoint (Cloudflare Pages Function, sends via Resend) |
+
+Sinhala and Tamil text is a draft and needs review by a native speaker.
+
+## Contact form setup (Cloudflare Pages)
+
+1. Create a Resend account, verify `vanguardprotection.lk`, create an API key.
+2. In Pages > Settings > Variables and Secrets add secret `RESEND_API_KEY`; optionally `MAIL_TO` and `MAIL_FROM`.
+3. Locally, copy `.dev.vars.example` to `.dev.vars` and run `npm run cf:preview`.
 
 ## Commands
 

@@ -1,0 +1,90 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import DivisionCard from '../../components/DivisionCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { divisions } from '../../data/divisions';
+import { ui } from '../../data/ui';
+import { img, bgUrl } from '../../lib/assets';
+import { locales, tx, type Lang } from '../../lib/i18n';
+
+export const getStaticPaths = () => locales.map((lang) => ({ params: { lang }, props: { lang } }));
+const { lang } = Astro.props as { lang: Lang };
+const a = ui.about;
+const hero = await bgUrl('images/services/fsm-lobby-inspection-team.webp');
+---
+<Base lang={lang} title={tx(a.title, lang)} description={tx(a.lead, lang)}>
+  <section class="hero" style={`--hero-img:url(${hero})`}>
+    <div class="container">
+      <span class="eyebrow">Vanguard Protection (Pvt) Ltd</span>
+      <h1>{tx(a.title, lang)}</h1>
+      <p class="lead">{tx(a.lead, lang)}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <div class="prose">
+        <h2>{tx(a.whoTitle, lang)}</h2>
+        <p>{tx(a.who1, lang)}</p>
+      </div>
+      <div class="photo"><Image src={img('images/services/security-patrol-vehicle-gatehouse.webp')} alt="" width={900} /></div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <div class="section-head"><h2>{tx(a.leadershipTitle, lang)}</h2></div>
+      <div class="leader">
+        <Image src={img('images/team/anura-suraweeraarachchi.webp')} alt={tx(a.leaderName, lang)} width={560} />
+        <div>
+          <h3>{tx(a.leaderName, lang)}</h3>
+          <div class="role">{tx(a.leaderRole, lang)}</div>
+          <p style="color:var(--muted);font-size:1.07rem">{tx(a.leaderText, lang)}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="vm">
+        <div class="card"><h3>{tx(a.visionTitle, lang)}</h3><p>{tx(a.vision, lang)}</p></div>
+        <div class="card"><h3>{tx(a.missionTitle, lang)}</h3><p>{tx(a.mission, lang)}</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <div class="section-head center"><h2>{tx(a.valuesTitle, lang)}</h2></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+        {ui.values.map((v, i) => (
+          <div class="card value">
+            <div class="num">{i + 1}</div>
+            <h3>{tx(v.title, lang)}</h3>
+            <p>{tx(v.text, lang)}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head center">
+        <h2>{tx(a.differenceTitle, lang)}</h2>
+        <p>{tx(a.difference, lang)}</p>
+      </div>
+      <div class="grid cols-4">
+        {divisions.map((d) => <DivisionCard d={d} lang={lang} />)}
+      </div>
+      <div class="section-head center" style="margin-top:3rem;margin-bottom:0">
+        <h3>{tx(a.commitmentTitle, lang)}</h3>
+        <p>{tx(a.commitment, lang)}</p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} title={ui.home.ctaTitle} text={ui.home.ctaText} />
+</Base>
