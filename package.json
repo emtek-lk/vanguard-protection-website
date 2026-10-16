@@ -10,8 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "cf:preview": "astro build && wrangler pages dev dist",
-    "cf:deploy": "astro build && wrangler pages deploy dist --project-name=vanguard-protection-website",
+    "cf:preview": "astro build && wrangler dev",
+    "cf:deploy": "astro build && wrangler deploy",
     "assets": "node scripts/process-assets.mjs"
   },
   "dependencies": {
