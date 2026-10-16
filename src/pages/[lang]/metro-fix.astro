@@ -1,0 +1,59 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { metrofix as m } from '../../data/metrofix';
+import { ui } from '../../data/ui';
+import { img, bgUrl } from '../../lib/assets';
+import { locales, tx, type Lang } from '../../lib/i18n';
+
+export const getStaticPaths = () => locales.map((lang) => ({ params: { lang }, props: { lang } }));
+const { lang } = Astro.props as { lang: Lang };
+const hero = await bgUrl(m.photo);
+// Metro Fix uses its own orange/slate palette from its logo.
+const accent = { accent: '#f08a00', accentDark: '#c96f00', accentSoft: '#fff3e0' };
+---
+<Base lang={lang} title={tx(m.eyebrow, lang)} description={tx(m.heroText, lang)} accent={accent}>
+  <section class="hero hero-division" style={`--hero-img:url(${hero})`}>
+    <div class="container hero-grid">
+      <div>
+        <span class="badge">{tx(m.eyebrow, lang)}</span>
+        <h1>{tx(m.heroTitle, lang)}</h1>
+        <p class="lead">{tx(m.heroText, lang)}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={`/${lang}/contact/?topic=metro-fix`}>{tx(ui.cta.requestAccess, lang)}</a>
+          <a class="btn btn-ghost" href="#how">{tx(m.howTitle, lang)}</a>
+        </div>
+      </div>
+      <div class="logo-plate"><Image src={img(m.logo)} alt="Metro Fix" width={640} loading="eager" /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container prose" style="max-width:820px">
+      <span class="eyebrow">{tx(m.eyebrow, lang)}</span>
+      <h2>{tx(m.aboutTitle, lang)}</h2>
+      {m.about.map((p) => <p>{tx(p, lang)}</p>)}
+    </div>
+  </section>
+
+  <section class="section alt" id="how">
+    <div class="container">
+      <div class="section-head center"><h2>{tx(m.howTitle, lang)}</h2></div>
+      <div class="steps">
+        {m.steps.map((s) => (
+          <div class="step"><h3>{tx(s.title, lang)}</h3><p>{tx(s.text, lang)}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head center"><h2>{tx(m.areasTitle, lang)}</h2></div>
+      <ul class="chips" style="justify-content:center">{m.areas.map((a) => <li>{tx(a, lang)}</li>)}</ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} title={m.ctaTitle} text={m.ctaText} topic="metro-fix" />
+</Base>

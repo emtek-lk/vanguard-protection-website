@@ -1,0 +1,114 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../../layouts/Base.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import DivisionCard from '../../../components/DivisionCard.astro';
+import { divisions } from '../../../data/divisions';
+import { metrofix } from '../../../data/metrofix';
+import { ui } from '../../../data/ui';
+import { img, bgUrl } from '../../../lib/assets';
+import { href, locales, tx, type Lang } from '../../../lib/i18n';
+
+export const getStaticPaths = () =>
+  locales.flatMap((lang) => divisions.map((division) => ({ params: { lang, division: division.slug }, props: { lang, slug: division.slug } })));
+
+const { lang, slug } = Astro.props as { lang: Lang; slug: string };
+const d = divisions.find((x) => x.slug === slug)!;
+const others = divisions.filter((x) => x.slug !== slug);
+const hero = await bgUrl(d.photo);
+const accent = { accent: d.accent, accentDark: d.accentDark, accentSoft: d.accentSoft };
+const hasCards = d.services.some((s) => s.text);
+---
+<Base lang={lang} title={d.name} description={tx(d.heroText, lang)} accent={accent}>
+  <section class="hero hero-division" style={`--hero-img:url(${hero})`}>
+    <div class="container hero-grid">
+      <div>
+        <span class="badge">{d.name}</span>
+        <h1>{tx(d.heroTitle, lang)}</h1>
+        <p class="lead">{tx(d.heroText, lang)}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={href(lang, 'contact') + `?topic=${d.slug}`}>{tx(ui.cta.consult, lang)}</a>
+          <a class="btn btn-ghost" href="#services">{tx(ui.services.servicesHeading, lang)}</a>
+        </div>
+      </div>
+      <div class="logo-plate"><Image src={img(d.logo)} alt={d.name} width={640} loading="eager" /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <div class="prose">
+        <span class="eyebrow">{tx(d.tagline, lang)}</span>
+        <h2>{tx(d.aboutTitle, lang)}</h2>
+        {d.about.map((p) => <p>{tx(p, lang)}</p>)}
+      </div>
+      <div class="photo"><Image src={img(d.photo)} alt="" width={900} /></div>
+    </div>
+  </section>
+
+  <section class="section alt" id="services">
+    <div class="container">
+      <div class="section-head"><h2>{tx(d.servicesTitle, lang)}</h2></div>
+      {hasCards ? (
+        <div class="grid cols-3">
+          {d.services.map((s) => (
+            <div class="service-card"><h3>{tx(s.title, lang)}</h3><p>{s.text ? tx(s.text, lang) : ''}</p></div>
+          ))}
+        </div>
+      ) : (
+        <ul class="chips">{d.services.map((s) => <li>{tx(s.title, lang)}</li>)}</ul>
+      )}
+    </div>
+  </section>
+
+  {d.sections.map((sec, i) => (
+    <section class={`section ${i % 2 === 0 ? '' : 'alt'}`} id={sec.id}>
+      <div class="container stack">
+        <div class="section-head" style="margin-bottom:0">
+          {sec.eyebrow && <span class="eyebrow">{tx(sec.eyebrow, lang)}</span>}
+          {sec.kind === 'cards' ? <p class="principle">{tx(sec.title, lang)}</p> : <h2>{tx(sec.title, lang)}</h2>}
+          {sec.intro?.map((p) => <p>{tx(p, lang)}</p>)}
+        </div>
+        {sec.kind === 'chips' && <ul class="chips">{sec.items.map((it) => <li>{tx(it.title, lang)}</li>)}</ul>}
+        {sec.kind === 'chain' && (
+          <div class="chain">
+            {sec.items.map((it, n) => (<><span>{tx(it.title, lang)}</span>{n < sec.items.length - 1 && <i>→</i>}</>))}
+          </div>
+        )}
+        {sec.kind === 'cards' && (
+          <div class="grid cols-3">
+            {sec.items.map((it) => (
+              <div class="service-card"><h3>{tx(it.title, lang)}</h3><p>{it.text ? tx(it.text, lang) : ''}</p></div>
+            ))}
+          </div>
+        )}
+        {sec.highlight && <div class="highlight">{tx(sec.highlight, lang)}</div>}
+      </div>
+    </section>
+  ))}
+
+  {slug === 'fsm' && (
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="band metro">
+          <div>
+            <span class="eyebrow" style="color:#f7b84a">{tx(metrofix.eyebrow, lang)}</span>
+            <h2>{tx(ui.home.metroTitle, lang)}</h2>
+            <p>{tx(ui.home.metroText, lang)}</p>
+            <a class="btn btn-primary" href={href(lang, 'metro-fix')}>{tx(ui.cta.discoverMetroFix, lang)}</a>
+          </div>
+          <div class="logo-plate"><Image src={img(metrofix.logo)} alt="Metro Fix" width={420} /></div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section alt">
+    <div class="container">
+      <div class="section-head center"><h2>{tx(ui.services.otherDivisions, lang)}</h2></div>
+      <div class="grid cols-3">{others.map((o) => <DivisionCard d={o} lang={lang} />)}</div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} title={ui.services.ctaTitle} text={ui.home.ctaText} topic={d.slug} />
+</Base>

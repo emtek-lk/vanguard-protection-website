@@ -1,0 +1,67 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '../lib/assets';
+import { divisions } from '../data/divisions';
+import { ui } from '../data/ui';
+import { site } from '../lib/site';
+import { href, locales, langNames, switchLang, tx, type Lang } from '../lib/i18n';
+
+interface Props { lang: Lang; pathname: string }
+const { lang, pathname } = Astro.props;
+const here = (p: string) => pathname.startsWith(href(lang, p));
+const before = [
+  { p: 'about', label: ui.nav.about },
+];
+const after = [
+  { p: 'metro-fix', label: ui.nav.metrofix },
+  { p: 'blog', label: ui.nav.blog },
+  { p: 'contact', label: ui.nav.contact },
+];
+---
+<header class="site-header">
+  <div class="container header-bar">
+    <a class="brand" href={href(lang)} aria-label={site.name}>
+      <Image src={img('logos/vanguard-protection-icon.png')} alt="" width={92} height={92} loading="eager" />
+      <div><span>VANGUARD</span><small>Protection</small></div>
+    </a>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href={href(lang)} aria-current={pathname === href(lang) ? 'page' : undefined}>{tx(ui.nav.home, lang)}</a>
+      {before.map((l) => <a href={href(lang, l.p)} aria-current={here(l.p) ? 'page' : undefined}>{tx(l.label, lang)}</a>)}
+      <details class="dd">
+        <summary>{tx(ui.nav.services, lang)}</summary>
+        <div class="dd-menu">
+          <a href={href(lang, 'services')}>{tx(ui.nav.allServices, lang)}</a>
+          {divisions.map((d) => (
+            <a href={href(lang, `services/${d.slug}`)}>
+              <Image src={img(d.logo)} alt="" width={60} height={60} />
+              <span>{d.name}</span>
+            </a>
+          ))}
+        </div>
+      </details>
+      {after.map((l) => <a href={href(lang, l.p)} aria-current={here(l.p) ? 'page' : undefined}>{tx(l.label, lang)}</a>)}
+    </nav>
+    <div class="header-tools">
+      <div class="lang" role="group" aria-label={tx(ui.nav.language, lang)}>
+        {locales.map((l) => <a href={switchLang(pathname, l)} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>{langNames[l]}</a>)}
+      </div>
+      <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav" aria-label={tx(ui.nav.menu, lang)}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<script>
+  const btn = document.getElementById('menu-btn');
+  const nav = document.getElementById('nav');
+  btn?.addEventListener('click', () => {
+    const open = nav?.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(!!open));
+  });
+  // close the services dropdown when clicking elsewhere
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll<HTMLDetailsElement>('.dd[open]').forEach((d) => {
+      if (!d.contains(e.target as Node)) d.open = false;
+    });
+  });
+</script>

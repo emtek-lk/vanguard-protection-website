@@ -1,0 +1,18 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '../lib/assets';
+import { ui } from '../data/ui';
+import { href, tx, type Lang } from '../lib/i18n';
+import type { Division } from '../data/divisions';
+
+const { d, lang } = Astro.props as { d: Division; lang: Lang };
+---
+<a class="division-card" href={href(lang, `services/${d.slug}`)} style={`--accent:${d.accent};--accent-dark:${d.accentDark};`}>
+  <div class="logo-box"><Image src={img(d.logo)} alt={d.name} width={360} /></div>
+  <div class="body">
+    <h3>{d.name}</h3>
+    <span class="tag">{tx(d.tagline, lang)}</span>
+    <p>{tx(d.cardText, lang)}</p>
+    <span class="more">{tx(ui.cta.viewDivision, lang)}</span>
+  </div>
+</a>

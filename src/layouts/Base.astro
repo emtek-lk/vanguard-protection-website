@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FloatingActions from '../components/FloatingActions.astro';
+import { locales, htmlLang, switchLang, type Lang } from '../lib/i18n';
+import { site } from '../lib/site';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  accent?: { accent: string; accentDark: string; accentSoft: string };
+}
+const { lang, title, description, accent } = Astro.props;
+const fullTitle = title === site.shortName ? site.name : `${title} | ${site.shortName}`;
+const path = Astro.url.pathname;
+const canonical = new URL(path, site.url).href;
+const style = accent ? `--accent:${accent.accent};--accent-dark:${accent.accentDark};--accent-soft:${accent.accentSoft};` : undefined;
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: site.url,
+  logo: new URL('/icon-512.png', site.url).href,
+  email: site.email,
+  telephone: site.phone,
+  foundingDate: String(site.founded),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.addressLines[0],
+    addressLocality: 'Nugegoda',
+    postalCode: '10250',
+    addressCountry: 'LK',
+  },
+};
+---
+<!doctype html>
+<html lang={htmlLang[lang]} style={style}>
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#182f5f" />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={new URL(switchLang(path, l), site.url).href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(switchLang(path, 'en'), site.url).href} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/icon-512.png', site.url).href} />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(org)} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header lang={lang} pathname={path} />
+    <main id="main"><slot /></main>
+    <Footer lang={lang} />
+    <FloatingActions />
+  </body>
+</html>

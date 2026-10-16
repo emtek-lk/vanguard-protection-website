@@ -1,0 +1,32 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { ui } from '../../../data/ui';
+import { img } from '../../../lib/assets';
+import { href, locales, tx, type Lang } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', (p) => !p.data.draft);
+  return locales.flatMap((lang) => posts.map((post) => ({ params: { lang, slug: post.id }, props: { lang, post } })));
+}
+const { lang, post } = Astro.props as { lang: Lang; post: Awaited<ReturnType<typeof getCollection<'blog'>>>[number] };
+const { Content } = await render(post);
+const date = post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<Base lang={lang} title={post.data.title} description={post.data.description}>
+  <section class="section" style="padding-bottom:1rem">
+    <div class="container article">
+      <a href={href(lang, 'blog')}>← {tx(ui.cta.backToBlog, lang)}</a>
+      <p class="meta" style="margin-top:1.4rem">{post.data.category} · {date}</p>
+      <h1 style="font-size:clamp(1.9rem,4vw,2.8rem)">{post.data.title}</h1>
+      {lang !== 'en' && <p class="note">{tx(ui.blog.englishOnly, lang)}</p>}
+      {post.data.image && <Image src={img(post.data.image)} alt="" width={1100} style="margin:1.6rem 0" />}
+    </div>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="container article"><Content /></div>
+  </section>
+  <CtaBand lang={lang} title={ui.home.ctaTitle} text={ui.home.ctaText} />
+</Base>

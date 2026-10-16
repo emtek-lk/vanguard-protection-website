@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '../lib/assets';
+import { divisions } from '../data/divisions';
+import { ui } from '../data/ui';
+import { site } from '../lib/site';
+import { href, tx, type Lang } from '../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <Image src={img('logos/vanguard-protection.png')} alt={site.name} width={240} />
+      <p>{tx(ui.footer.tagline, lang)}</p>
+    </div>
+    <div>
+      <h4>{tx(ui.footer.company, lang)}</h4>
+      <ul>
+        <li><a href={href(lang, 'about')}>{tx(ui.nav.about, lang)}</a></li>
+        <li><a href={href(lang, 'metro-fix')}>{tx(ui.nav.metrofix, lang)}</a></li>
+        <li><a href={href(lang, 'blog')}>{tx(ui.nav.blog, lang)}</a></li>
+        <li><a href={href(lang, 'contact')}>{tx(ui.nav.contact, lang)}</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>{tx(ui.footer.divisions, lang)}</h4>
+      <ul>
+        {divisions.map((d) => <li><a href={href(lang, `services/${d.slug}`)}>{d.name}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <h4>{tx(ui.footer.contact, lang)}</h4>
+      <ul>
+        <li>{site.addressLines.join(', ')}</li>
+        <li><a href={site.phoneHref}>{site.phone}</a></li>
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© {year} {site.name}. {tx(ui.footer.rights, lang)}</span>
+    <span>vanguardprotection.lk</span>
+  </div>
+</footer>

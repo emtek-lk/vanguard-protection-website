@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '../lib/assets';
+
+// Logo-quality files only. Excluded until better artwork is supplied:
+// moon-plains-luxury-apartments, mount-clifford-residencies (building photos), spring-and-summer (clipped).
+const clients: [string, string][] = [
+  ['ikman', 'ikman.lk'],
+  ['breadtalk', 'BreadTalk'],
+  ['green-cabin', 'Green Cabin'],
+  ['sala', 'SALA'],
+  ['royal-hospital', 'Royal Hospital'],
+  ['span-towers', 'Span Towers'],
+  ['nolimit', 'NOLIMIT'],
+  ['harris-and-menuk', 'Harris & Menuk'],
+  ['advance-barcode-technologies', 'Advance Barcode Technologies'],
+  ['blue-ocean-group', 'Blue Ocean Group of Companies'],
+  ['chemlanka', 'ChemLanka'],
+  ['even-beach-resort', 'Even Beach Resort'],
+  ['ilma-international-girls-school', 'Ilma International Girls School'],
+  ['neo-graphics', 'Neo Graphics'],
+  ['p-and-a-insurance-brokers', 'P & A Insurance Brokers (Pvt) Ltd'],
+  ['p11', 'P11'],
+  ['saffron-beach-hotel-wadduwa', 'Saffron Beach Hotel, Wadduwa'],
+  ['sarasavi-bookshop', 'Sarasavi Bookshop'],
+  ['target-btl', 'Target BTL'],
+];
+---
+<div class="marquee">
+  <div class="marquee-track">
+    {[0, 1].map((n) => clients.map(([file, name]) => (
+      <div class="client" aria-hidden={n === 1 ? 'true' : undefined}>
+        <Image src={img(`clients/${file}.png`)} alt={n === 1 ? '' : name} width={240} loading="lazy" />
+      </div>
+    )))}
+  </div>
+</div>

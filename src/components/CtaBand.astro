@@ -1,0 +1,21 @@
+---
+import { ui } from '../data/ui';
+import { href, tx, type Lang, type L } from '../lib/i18n';
+import { site } from '../lib/site';
+
+const { lang, title, text, topic } = Astro.props as { lang: Lang; title: L; text: L; topic?: string };
+---
+<section class="section cta-band">
+  <div class="container">
+    <div class="band">
+      <div>
+        <h2>{tx(title, lang)}</h2>
+        <p>{tx(text, lang)}</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={href(lang, 'contact') + (topic ? `?topic=${topic}` : '')}>{tx(ui.cta.consult, lang)}</a>
+        <a class="btn btn-ghost" href={site.phoneHref}>{tx(ui.cta.callUs, lang)} · {site.phone}</a>
+      </div>
+    </div>
+  </div>
+</section>

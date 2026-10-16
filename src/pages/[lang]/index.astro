@@ -1,0 +1,168 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DivisionCard from '../../components/DivisionCard.astro';
+import ClientLogos from '../../components/ClientLogos.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { divisions } from '../../data/divisions';
+import { metrofix } from '../../data/metrofix';
+import { ui } from '../../data/ui';
+import { img, bgUrl } from '../../lib/assets';
+import { href, locales, tx, type Lang } from '../../lib/i18n';
+import { site } from '../../lib/site';
+
+export const getStaticPaths = () => locales.map((lang) => ({ params: { lang }, props: { lang } }));
+const { lang } = Astro.props as { lang: Lang };
+
+const slides = await Promise.all(
+  divisions.map(async (d) => ({ d, url: await bgUrl(d.photo, 1920) }))
+);
+const posts = (await getCollection('blog', (p) => !p.data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+<Base lang={lang} title={site.shortName} description={tx(ui.meta.description, lang)}>
+  <section class="hero hero-slider" id="hero">
+    <div class="hero-slides" aria-hidden="true">
+      {slides.map((s, i) => <div class={`slide${i === 0 ? ' on' : ''}`} style={`--bg:url(${s.url})`}></div>)}
+    </div>
+    <div class="container">
+      <span class="eyebrow">{tx(ui.home.eyebrow, lang)}</span>
+      <h1>{tx(ui.home.title, lang)}</h1>
+      <p class="lead">{tx(ui.home.lead, lang)}</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={href(lang, 'services')}>{tx(ui.cta.ourServices, lang)}</a>
+        <a class="btn btn-ghost" href={href(lang, 'contact')}>{tx(ui.cta.consult, lang)}</a>
+      </div>
+      <div class="slide-nav" role="tablist">
+        {divisions.map((d, i) => (
+          <button type="button" style={`--dot:${d.accent}`} aria-current={i === 0 ? 'true' : undefined}><i></i>{d.name}</button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="container grid cols-4">
+      <div class="stat"><b data-count={site.founded} data-from="1990">{site.founded}</b><span>{tx(ui.stats.founded, lang)}</span></div>
+      <div class="stat"><b data-count={divisions.length}>{divisions.length}</b><span>{tx(ui.stats.divisions, lang)}</span></div>
+      <div class="stat"><b>24/7</b><span>{tx(ui.stats.support, lang)}</span></div>
+      <div class="stat"><b data-count="3">3</b><span>{tx(ui.stats.languages, lang)}</span></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head center">
+        <h2>{tx(ui.home.divisionsTitle, lang)}</h2>
+        <p>{tx(ui.home.divisionsLead, lang)}</p>
+      </div>
+      <div class="grid cols-4">
+        {divisions.map((d) => <DivisionCard d={d} lang={lang} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container split">
+      <div class="photo">
+        <Image src={img('images/services/security-guards-vip-arrival.webp')} alt="" width={900} />
+      </div>
+      <div>
+        <span class="eyebrow">{tx(ui.nav.about, lang)}</span>
+        <h2>{tx(ui.home.aboutTitle, lang)}</h2>
+        <p style="color:var(--muted);font-size:1.07rem">{tx(ui.home.aboutText, lang)}</p>
+        <a class="btn btn-outline" href={href(lang, 'about')}>{tx(ui.cta.learnMore, lang)}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head center"><h2>{tx(ui.home.valuesTitle, lang)}</h2></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+        {ui.values.map((v, i) => (
+          <div class="card value">
+            <div class="num">{i + 1}</div>
+            <h3>{tx(v.title, lang)}</h3>
+            <p>{tx(v.text, lang)}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="band metro">
+        <div>
+          <span class="eyebrow" style="color:#f7b84a">{tx(metrofix.eyebrow, lang)}</span>
+          <h2>{tx(ui.home.metroTitle, lang)}</h2>
+          <p>{tx(ui.home.metroText, lang)}</p>
+          <a class="btn btn-primary" href={href(lang, 'metro-fix')}>{tx(ui.cta.discoverMetroFix, lang)}</a>
+        </div>
+        <div class="logo-plate"><Image src={img(metrofix.logo)} alt="Metro Fix" width={420} /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <div class="section-head center"><h2>{tx(ui.home.clientsTitle, lang)}</h2></div>
+      <ClientLogos />
+    </div>
+  </section>
+
+  {posts.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head" style="display:flex;justify-content:space-between;align-items:end;gap:1rem;max-width:none">
+          <h2 style="margin:0">{tx(ui.home.newsTitle, lang)}</h2>
+          <a class="btn btn-outline" href={href(lang, 'blog')}>{tx(ui.home.allNews, lang)}</a>
+        </div>
+        <div class="grid cols-3">
+          {posts.map((p) => (
+            <a class="post-card" href={href(lang, `blog/${p.id}`)}>
+              {p.data.image && <Image src={img(p.data.image)} alt="" width={640} />}
+              <div class="body">
+                <span class="meta">{p.data.category} · {p.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                <h3>{p.data.title}</h3>
+                <p>{p.data.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand lang={lang} title={ui.home.ctaTitle} text={ui.home.ctaText} />
+</Base>
+<script>
+  // Hero slideshow: crossfade between the four divisions
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const slides = [...hero.querySelectorAll<HTMLElement>('.slide')];
+    const dots = [...hero.querySelectorAll<HTMLButtonElement>('.slide-nav button')];
+    const DUR = 6000;
+    let cur = 0, timer: number | undefined;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    hero.style.setProperty('--dur', DUR + 'ms');
+    const show = (n: number) => {
+      slides[cur].classList.remove('on');
+      dots[cur].removeAttribute('aria-current');
+      cur = (n + slides.length) % slides.length;
+      slides[cur].classList.add('on');
+      void dots[cur].offsetWidth; // restart the progress animation
+      dots[cur].setAttribute('aria-current', 'true');
+    };
+    const start = () => { if (!reduce) timer = window.setInterval(() => show(cur + 1), DUR); };
+    const stop = () => clearInterval(timer);
+    dots.forEach((d, i) => d.addEventListener('click', () => { stop(); show(i); start(); }));
+    hero.addEventListener('mouseenter', stop);
+    hero.addEventListener('mouseleave', () => { stop(); start(); });
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : (stop(), start())));
+    start();
+  }
+</script>

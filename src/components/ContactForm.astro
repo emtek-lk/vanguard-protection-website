@@ -1,0 +1,59 @@
+---
+import { divisions } from '../data/divisions';
+import { ui } from '../data/ui';
+import { tx, type Lang } from '../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const msg = {
+  ok: tx(ui.contact.success, lang),
+  err: tx(ui.contact.error, lang),
+  sending: tx(ui.contact.sending, lang),
+  send: tx(ui.contact.send, lang),
+};
+---
+<form class="form" id="contact-form" method="post" action="/api/contact" data-ok={msg.ok} data-err={msg.err} data-sending={msg.sending} data-send={msg.send}>
+  <input type="hidden" name="lang" value={lang} />
+  <label class="hp" aria-hidden="true">Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+  <div class="row">
+    <label>{tx(ui.contact.name, lang)}<input name="name" required maxlength="120" autocomplete="name" /></label>
+    <label>{tx(ui.contact.phoneField, lang)}<input name="phone" type="tel" maxlength="40" autocomplete="tel" /></label>
+  </div>
+  <label>{tx(ui.contact.emailField, lang)}<input name="email" type="email" required maxlength="160" autocomplete="email" /></label>
+  <label>{tx(ui.contact.topic, lang)}
+    <select name="topic" id="topic">
+      <option value="general">{tx(ui.contact.general, lang)}</option>
+      {divisions.map((d) => <option value={d.slug}>{d.name}</option>)}
+      <option value="metro-fix">Metro Fix</option>
+    </select>
+  </label>
+  <label>{tx(ui.contact.message, lang)}<textarea name="message" required maxlength="4000"></textarea></label>
+  <button class="btn btn-primary" type="submit">{msg.send}</button>
+  <div class="status" id="form-status" role="status" aria-live="polite"></div>
+</form>
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('form-status')!;
+  const topic = new URLSearchParams(location.search).get('topic');
+  const sel = document.getElementById('topic') as HTMLSelectElement | null;
+  if (topic && sel && [...sel.options].some((o) => o.value === topic)) sel.value = topic;
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button')!;
+    btn.disabled = true;
+    btn.textContent = form.dataset.sending!;
+    status.className = 'status';
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+      if (!res.ok) throw new Error(String(res.status));
+      status.textContent = form.dataset.ok!;
+      status.className = 'status ok';
+      form.reset();
+    } catch {
+      status.textContent = form.dataset.err!;
+      status.className = 'status err';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = form.dataset.send!;
+    }
+  });
+</script>

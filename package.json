@@ -1,0 +1,24 @@
+{
+  "name": "vanguard-protection-website",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "cf:preview": "astro build && wrangler pages dev dist",
+    "cf:deploy": "astro build && wrangler pages deploy dist --project-name=vanguard-protection-website",
+    "assets": "node scripts/process-assets.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.4.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.151.0"
+  }
+}

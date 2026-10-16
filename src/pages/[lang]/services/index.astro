@@ -1,0 +1,58 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../../layouts/Base.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { divisions } from '../../../data/divisions';
+import { metrofix } from '../../../data/metrofix';
+import { ui } from '../../../data/ui';
+import { img, bgUrl } from '../../../lib/assets';
+import { href, locales, tx, type Lang } from '../../../lib/i18n';
+
+export const getStaticPaths = () => locales.map((lang) => ({ params: { lang }, props: { lang } }));
+const { lang } = Astro.props as { lang: Lang };
+const s = ui.services;
+const hero = await bgUrl('images/services/fsm-plant-room-chillers.webp');
+---
+<Base lang={lang} title={tx(s.title, lang)} description={tx(s.lead, lang)}>
+  <section class="hero" style={`--hero-img:url(${hero})`}>
+    <div class="container">
+      <span class="eyebrow">Vanguard Protection (Pvt) Ltd</span>
+      <h1>{tx(s.title, lang)}</h1>
+      <p class="lead">{tx(s.lead, lang)}</p>
+    </div>
+  </section>
+
+  {divisions.map((d, i) => (
+    <section class={`section ${i % 2 ? 'alt' : ''}`} style={`--accent:${d.accent};--accent-dark:${d.accentDark};--accent-soft:${d.accentSoft}`}>
+      <div class={`container split`}>
+        <div style={i % 2 ? 'order:2' : ''}>
+          <div class="logo-plate" style="max-width:380px;margin-bottom:1.4rem"><Image src={img(d.logo)} alt={d.name} width={500} /></div>
+          <h2>{d.name}</h2>
+          <p class="eyebrow" style="margin:0 0 .8rem">{tx(d.tagline, lang)}</p>
+          <p style="color:var(--muted);font-size:1.05rem">{tx(d.cardText, lang)}</p>
+          <ul class="chips" style="margin:1rem 0 1.6rem">
+            {d.services.slice(0, 6).map((it) => <li>{tx(it.title, lang)}</li>)}
+          </ul>
+          <a class="btn btn-primary" href={href(lang, `services/${d.slug}`)}>{tx(ui.cta.viewDivision, lang)}</a>
+        </div>
+        <div class="photo"><Image src={img(d.photo)} alt="" width={900} /></div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="band metro">
+        <div>
+          <span class="eyebrow" style="color:#f7b84a">{tx(metrofix.eyebrow, lang)}</span>
+          <h2>{tx(ui.home.metroTitle, lang)}</h2>
+          <p>{tx(ui.home.metroText, lang)}</p>
+          <a class="btn btn-primary" href={href(lang, 'metro-fix')}>{tx(ui.cta.discoverMetroFix, lang)}</a>
+        </div>
+        <div class="logo-plate"><Image src={img(metrofix.logo)} alt="Metro Fix" width={420} /></div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} title={s.ctaTitle} text={ui.home.ctaText} />
+</Base>

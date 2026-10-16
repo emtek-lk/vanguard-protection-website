@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import { ui } from '../../../data/ui';
+import { img, bgUrl } from '../../../lib/assets';
+import { href, locales, tx, type Lang } from '../../../lib/i18n';
+
+export const getStaticPaths = () => locales.map((lang) => ({ params: { lang }, props: { lang } }));
+const { lang } = Astro.props as { lang: Lang };
+const b = ui.blog;
+const posts = (await getCollection('blog', (p) => !p.data.draft)).sort((x, y) => y.data.pubDate.valueOf() - x.data.pubDate.valueOf());
+const hero = await bgUrl('images/services/safety-audit-manual-hard-hat.webp');
+---
+<Base lang={lang} title={tx(b.title, lang)} description={tx(b.lead, lang)}>
+  <section class="hero" style={`--hero-img:url(${hero})`}>
+    <div class="container">
+      <span class="eyebrow">Vanguard Protection (Pvt) Ltd</span>
+      <h1>{tx(b.title, lang)}</h1>
+      <p class="lead">{tx(b.lead, lang)}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {lang !== 'en' && <p class="note">{tx(b.englishOnly, lang)}</p>}
+      {posts.length === 0 ? (
+        <p>{tx(b.none, lang)}</p>
+      ) : (
+        <div class="grid cols-3">
+          {posts.map((p) => (
+            <a class="post-card" href={href(lang, `blog/${p.id}`)}>
+              {p.data.image && <Image src={img(p.data.image)} alt="" width={640} />}
+              <div class="body">
+                <span class="meta">{p.data.category} · {p.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                <h3>{p.data.title}</h3>
+                <p>{p.data.description}</p>
+                <span class="more">{tx(ui.cta.readMore, lang)}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</Base>
