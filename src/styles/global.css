@@ -264,3 +264,77 @@ html[dir='rtl'] .more::after { content: ' ←'; }
 .footer-bottom { border-top: 1px solid rgb(255 255 255 / 12%); padding-block: 1.3rem; font-size: .85rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+/* ───────── Motion & dynamic elements ───────── */
+.progress { position: fixed; top: 0; left: 0; height: 3px; width: 100%; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--brand-blue), var(--accent)); z-index: 90; pointer-events: none; }
+.site-header { transition: box-shadow .25s, background .25s; }
+.site-header.scrolled { box-shadow: 0 6px 24px rgb(13 27 61 / 10%); }
+.header-bar { transition: min-height .25s; }
+.site-header.scrolled .header-bar { min-height: 62px; }
+
+/* reveal on scroll (only when JS is running) */
+.js .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--i, 0) * 70ms); }
+.js .reveal.in { opacity: 1; transform: none; }
+.js .reveal.from-left { transform: translateX(-34px); }
+.js .reveal.from-right { transform: translateX(34px); }
+.js .reveal.from-left.in, .js .reveal.from-right.in { transform: none; }
+
+/* hover polish */
+.service-card, .step, .card { transition: transform .25s, box-shadow .25s; }
+.service-card:hover, .step:hover, .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.chips li { transition: transform .2s, background .2s, color .2s, border-color .2s; }
+.chips li:hover { transform: translateY(-2px); background: var(--accent); color: #fff; border-color: var(--accent); }
+.chips li:hover::before { background: #fff; }
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 35%) 50%, transparent 70%); transform: translateX(-120%); transition: transform .6s; }
+.btn-primary:hover::after { transform: translateX(120%); }
+.logo-plate { animation: float 6s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-8px); } }
+
+/* hero slideshow (home) */
+.hero-slider::before { display: none; }
+.hero-slides { position: absolute; inset: 0; z-index: -2; }
+.hero-slides .slide { position: absolute; inset: 0; background: var(--bg) center/cover no-repeat; opacity: 0; transition: opacity 1.4s ease; }
+.hero-slides .slide.on { opacity: .45; animation: kenburns 9s ease-out forwards; }
+@keyframes kenburns { from { transform: scale(1.02); } to { transform: scale(1.12); } }
+.slide-nav { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 2.6rem; }
+.slide-nav button { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: .55rem; background: rgb(255 255 255 / 10%); color: rgb(255 255 255 / 80%); border: 1px solid rgb(255 255 255 / 22%); border-radius: 999px; padding: .5rem 1rem; font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; backdrop-filter: blur(4px); transition: background .2s, color .2s; }
+.slide-nav button i { width: 9px; height: 9px; border-radius: 50%; background: var(--dot); }
+.slide-nav button:hover { background: rgb(255 255 255 / 20%); color: #fff; }
+.slide-nav button[aria-current='true'] { background: rgb(255 255 255 / 22%); color: #fff; }
+.slide-nav button::after { content: ''; position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: var(--dot); transform: scaleX(0); transform-origin: 0 50%; }
+.slide-nav button[aria-current='true']::after { animation: fill var(--dur, 6s) linear forwards; }
+@keyframes fill { to { transform: scaleX(1); } }
+
+/* stats strip */
+.stats { position: relative; z-index: 2; margin-top: -3.2rem; }
+.stats .grid { gap: 1rem; }
+.stat { background: #fff; border-radius: 16px; padding: 1.3rem 1.4rem; box-shadow: var(--shadow-lg); border-bottom: 4px solid var(--brand-blue); text-align: center; }
+.stat b { display: block; font-size: clamp(1.8rem, 3.2vw, 2.5rem); line-height: 1.1; color: var(--brand); font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: .88rem; font-weight: 600; }
+.stat:nth-child(2) { border-color: #e8661a; } .stat:nth-child(3) { border-color: #d62a1a; } .stat:nth-child(4) { border-color: #1878c0; }
+@media (max-width: 760px) { .stats .grid { grid-template-columns: repeat(2, 1fr); } .stats { margin-top: -2rem; } }
+
+/* client marquee */
+.marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee-track { display: flex; gap: 1rem; width: max-content; animation: scroll 55s linear infinite; padding-block: .6rem; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee .client { width: 170px; flex: none; }
+@keyframes scroll { to { transform: translateX(calc(-50% - .5rem)); } }
+
+/* floating actions */
+.fab { position: fixed; right: 1rem; bottom: 1rem; z-index: 60; display: grid; gap: .6rem; }
+.fab a, .fab button { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; color: #fff; border: 0; cursor: pointer; box-shadow: 0 8px 22px rgb(13 27 61 / 30%); transition: transform .2s, opacity .3s; }
+.fab a:hover, .fab button:hover { transform: scale(1.08); text-decoration: none; }
+.fab .wa { background: #25d366; animation: pulse 2.6s infinite; }
+.fab .up { background: var(--brand); opacity: 0; pointer-events: none; transform: translateY(10px); }
+.fab .up.show { opacity: 1; pointer-events: auto; transform: none; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgb(37 211 102 / 55%), 0 8px 22px rgb(13 27 61 / 30%); } 70% { box-shadow: 0 0 0 16px rgb(37 211 102 / 0%), 0 8px 22px rgb(13 27 61 / 30%); } 100% { box-shadow: 0 0 0 0 rgb(37 211 102 / 0%), 0 8px 22px rgb(13 27 61 / 30%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .hero-slides .slide.on { animation: none; }
+  .logo-plate, .fab .wa, .marquee-track { animation: none; }
+  .marquee { overflow-x: auto; mask-image: none; -webkit-mask-image: none; }
+  .slide-nav button[aria-current='true']::after { animation: none; transform: scaleX(1); }
+}

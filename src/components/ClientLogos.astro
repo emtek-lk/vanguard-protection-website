@@ -26,8 +26,12 @@ const clients: [string, string][] = [
   ['target-btl', 'Target BTL'],
 ];
 ---
-<div class="clients">
-  {clients.map(([file, name]) => (
-    <div class="client"><Image src={img(`clients/${file}.png`)} alt={name} width={240} loading="lazy" /></div>
-  ))}
+<div class="marquee">
+  <div class="marquee-track">
+    {[0, 1].map((n) => clients.map(([file, name]) => (
+      <div class="client" aria-hidden={n === 1 ? 'true' : undefined}>
+        <Image src={img(`clients/${file}.png`)} alt={n === 1 ? '' : name} width={240} loading="lazy" />
+      </div>
+    )))}
+  </div>
 </div>

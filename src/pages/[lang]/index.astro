@@ -15,13 +15,18 @@ import { site } from '../../lib/site';
 export const getStaticPaths = () => locales.map((lang) => ({ params: { lang }, props: { lang } }));
 const { lang } = Astro.props as { lang: Lang };
 
-const hero = await bgUrl('images/services/fsm-lobby-inspection-team.webp');
+const slides = await Promise.all(
+  divisions.map(async (d) => ({ d, url: await bgUrl(d.photo, 1920) }))
+);
 const posts = (await getCollection('blog', (p) => !p.data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 ---
 <Base lang={lang} title={site.shortName} description={tx(ui.meta.description, lang)}>
-  <section class="hero" style={`--hero-img:url(${hero})`}>
+  <section class="hero hero-slider" id="hero">
+    <div class="hero-slides" aria-hidden="true">
+      {slides.map((s, i) => <div class={`slide${i === 0 ? ' on' : ''}`} style={`--bg:url(${s.url})`}></div>)}
+    </div>
     <div class="container">
       <span class="eyebrow">{tx(ui.home.eyebrow, lang)}</span>
       <h1>{tx(ui.home.title, lang)}</h1>
@@ -30,8 +35,22 @@ const posts = (await getCollection('blog', (p) => !p.data.draft))
         <a class="btn btn-primary" href={href(lang, 'services')}>{tx(ui.cta.ourServices, lang)}</a>
         <a class="btn btn-ghost" href={href(lang, 'contact')}>{tx(ui.cta.consult, lang)}</a>
       </div>
+      <div class="slide-nav" role="tablist">
+        {divisions.map((d, i) => (
+          <button type="button" style={`--dot:${d.accent}`} aria-current={i === 0 ? 'true' : undefined}><i></i>{d.name}</button>
+        ))}
+      </div>
     </div>
   </section>
+
+  <div class="stats">
+    <div class="container grid cols-4">
+      <div class="stat"><b data-count={site.founded} data-from="1990">{site.founded}</b><span>{tx(ui.stats.founded, lang)}</span></div>
+      <div class="stat"><b data-count={divisions.length}>{divisions.length}</b><span>{tx(ui.stats.divisions, lang)}</span></div>
+      <div class="stat"><b>24/7</b><span>{tx(ui.stats.support, lang)}</span></div>
+      <div class="stat"><b data-count="3">3</b><span>{tx(ui.stats.languages, lang)}</span></div>
+    </div>
+  </div>
 
   <section class="section">
     <div class="container">
@@ -120,3 +139,30 @@ const posts = (await getCollection('blog', (p) => !p.data.draft))
 
   <CtaBand lang={lang} title={ui.home.ctaTitle} text={ui.home.ctaText} />
 </Base>
+<script>
+  // Hero slideshow: crossfade between the four divisions
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const slides = [...hero.querySelectorAll<HTMLElement>('.slide')];
+    const dots = [...hero.querySelectorAll<HTMLButtonElement>('.slide-nav button')];
+    const DUR = 6000;
+    let cur = 0, timer: number | undefined;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    hero.style.setProperty('--dur', DUR + 'ms');
+    const show = (n: number) => {
+      slides[cur].classList.remove('on');
+      dots[cur].removeAttribute('aria-current');
+      cur = (n + slides.length) % slides.length;
+      slides[cur].classList.add('on');
+      void dots[cur].offsetWidth; // restart the progress animation
+      dots[cur].setAttribute('aria-current', 'true');
+    };
+    const start = () => { if (!reduce) timer = window.setInterval(() => show(cur + 1), DUR); };
+    const stop = () => clearInterval(timer);
+    dots.forEach((d, i) => d.addEventListener('click', () => { stop(); show(i); start(); }));
+    hero.addEventListener('mouseenter', stop);
+    hero.addEventListener('mouseleave', () => { stop(); start(); });
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : (stop(), start())));
+    start();
+  }
+</script>

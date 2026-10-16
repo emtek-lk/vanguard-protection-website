@@ -62,6 +62,12 @@ export const ui = {
       'எங்கள் தொழில்நுட்பச் செயலி, வேகமான, வெளிப்படையான சேவைக்காக தகுதிவாய்ந்த MEP தொழில்நுட்ப வல்லுநர்களுடன் உங்களை இணைக்கிறது.'
     ),
   },
+  stats: {
+    founded: l('Founded', 'ආරම්භ කළේ', 'நிறுவப்பட்டது'),
+    divisions: l('Specialist divisions', 'විශේෂිත අංශ', 'சிறப்புப் பிரிவுகள்'),
+    support: l('Dependable partner', 'විශ්වසනීය සහකරු', 'நம்பகமான கூட்டாளி'),
+    languages: l('Languages served', 'සේවා සපයන භාෂා', 'சேவை மொழிகள்'),
+  },
   about: {
     title: l('About Us', 'අප ගැන', 'எங்களைப் பற்றி'),
     lead: l('A dynamic, multi-faceted Integrated Facility Management company operating out of Colombo, Sri Lanka.', 'කොළඹ, ශ්‍රී ලංකාව කේන්ද්‍ර කරගත් ගතික, බහුවිධ ඒකාබද්ධ පහසුකම් කළමනාකරණ සමාගමක්.', 'கொழும்பு, இலங்கையை மையமாகக் கொண்ட ஒரு துடிப்பான, பல்துறை ஒருங்கிணைந்த வசதி மேலாண்மை நிறுவனம்.'),
