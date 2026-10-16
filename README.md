@@ -11,14 +11,15 @@ Astro static site, hosted on Cloudflare Pages. Trilingual (English / Sinhala / T
 | `src/data/metrofix.ts` | Metro Fix page content |
 | `src/lib/site.ts` | Company name, phone, email, address |
 | `src/content/blog/*.md` | Blog posts (frontmatter: title, description, pubDate, category, image) |
-| `functions/api/contact.js` | Contact form endpoint (Cloudflare Pages Function, sends via Resend) |
+| `worker/` | Cloudflare Worker: serves `dist/` and handles `POST /api/contact` (sends via Resend) |
+| `wrangler.jsonc` | Cloudflare deploy config (project name must match the Cloudflare project) |
 
 Sinhala and Tamil text is a draft and needs review by a native speaker.
 
 ## Contact form setup (Cloudflare Pages)
 
 1. Create a Resend account, verify `vanguardprotection.lk`, create an API key.
-2. In Pages > Settings > Variables and Secrets add secret `RESEND_API_KEY`; optionally `MAIL_TO` and `MAIL_FROM`.
+2. In Cloudflare > Workers & Pages > your project > Settings > Variables and Secrets add secret `RESEND_API_KEY`; optionally `MAIL_TO` and `MAIL_FROM`.
 3. Locally, copy `.dev.vars.example` to `.dev.vars` and run `npm run cf:preview`.
 
 ## Commands
@@ -29,15 +30,9 @@ Sinhala and Tamil text is a draft and needs review by a native speaker.
 | `npm run dev` | Dev server at http://localhost:4321 |
 | `npm run build` | Build static site to `dist/` |
 | `npm run preview` | Preview the build locally |
-| `npm run cf:preview` | Build and serve via Cloudflare's local Pages runtime |
+| `npm run cf:preview` | Build and serve via Cloudflare's local Worker runtime |
 | `npm run cf:deploy` | Build and deploy via Wrangler (needs `wrangler login`) |
 
-## Cloudflare Pages (Git integration)
-
-- Framework preset: Astro
-- Build command: `npm run build`
-- Build output directory: `dist`
-- Environment variable: `NODE_VERSION` = `22` (or higher)
 
 ## Assets
 

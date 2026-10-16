@@ -1,6 +1,6 @@
-// Cloudflare Pages Function: POST /api/contact
+// POST /api/contact handler (called from worker/index.js)
 // Sends the enquiry to info@vanguardprotection.lk using the Resend email API.
-// Required secret:  RESEND_API_KEY   (Pages > Settings > Variables and Secrets)
+// Required secret:  RESEND_API_KEY   (Workers & Pages > your project > Settings > Variables and Secrets)
 // Optional:         MAIL_TO, MAIL_FROM  (the From domain must be verified in Resend)
 
 const json = (body, status = 200) =>
@@ -8,7 +8,7 @@ const json = (body, status = 200) =>
 
 const clean = (v, max) => String(v ?? '').replace(/[\r\n]+/g, ' ').trim().slice(0, max);
 
-export async function onRequestPost({ request, env }) {
+export async function handleContact(request, env) {
   let form;
   try {
     form = await request.formData();
@@ -47,4 +47,3 @@ export async function onRequestPost({ request, env }) {
   return json({ ok: true });
 }
 
-export const onRequest = () => json({ ok: false, error: 'method_not_allowed' }, 405);
